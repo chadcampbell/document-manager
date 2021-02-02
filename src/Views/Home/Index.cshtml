@@ -1,0 +1,282 @@
+﻿@using System.Text.Json;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document Manager</title>
+    <meta name="description" content="An example of a document manager.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link href="~/css/theme.css" rel="stylesheet">
+</head>
+
+<body id="documentManager" class="d-flex flex-column h-100" style="overflow:hidden;">
+    <div id="documentManager" class="d-flex flex-column h-100" v-cloak>
+        @* The header of the app. *@
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Document Upload Service</a>
+                </div>
+            </nav>
+        </header>
+
+        @* The main content area of the app. *@
+        <main role="main" class="flex-fill overflow-auto">
+            <div class="container ps-3">
+                <h2 class="h4">Documents</h2>
+                <div v-if="documents.length > 0" class="row row-cols-1 row-cols-md-3 g-4">
+                    <transition-group name="document">
+                        <div class="col" v-for="document in documents" :key="document.id">
+                            <div class="card h-100" @@dblclick="onDownloadDocument(document)" :title="'Double-click to download the \'' + document.fileName + '\' document.'">
+                                <div class="card-body">
+                                    <div class="d-flex flex-row align-items-stretch">
+                                        <div style="width:15%; height:100%;">
+                                            <div class="circle"><span class="circle-content">{{ document.extension }}</span></div>
+                                        </div>
+                                        <div class="flex-fill ps-2" style="width:80%;">
+                                            <div class="fw-bold">{{ document.fileName }}</div>
+                                            <div class="d-flex flex-row">
+                                                <div class="pe-2">{{ document.fileSize }}</div>
+                                                <div>{{ document.uploadDate }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown" style="width:5%;">
+                                            <button class="btn context-menu-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                                …
+                                            </button>
+
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                                <li><a class="dropdown-item" href="#" @@click="onDeleteDocumentClick(document)">Delete</a></li>
+                                            </ul>
+                                        </div>                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </transition-group>
+                </div>
+
+                <div v-else>
+                    There are no documents in the document manager. Why not <a href="#" class="link-primary" data-bs-toggle="modal" data-bs-target="#documentModal">add one</a>?
+                </div>
+            </div>
+
+            <div v-if="documents.length > 0" class="position-sticky top-100 start-100">
+                <div class="container py-3">
+                    <button id="uploadButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#documentModal">+</button>
+                </div>
+            </div>
+
+            <div class="toast-container position-absolute bottom-0 end-0 pb-5 pe-3">
+                <div id="successToast" class="toast d-flex align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-body">
+                        {{ toastSuccessMessage }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white ms-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+
+                <div id="errorToast" class="toast d-flex align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-body">
+                        {{ toastErrorMessage }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white ms-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </main>
+
+        @* The footer of the app. *@
+        <footer class="footer mt-auto py-3 bg-light">
+            <div class="container d-flex">
+                <div class="flex-fill">{{ documentCount }}</div>
+                <div>&copy; 2021 - Chad Campbell</div>
+            </div>
+        </footer>
+
+        @* The document upload modal window. *@
+        <div id="documentModal" class="modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Document</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="documentFile" class="form-label">Please choose a file to upload</label>
+                            <input id="documentFile" class="form-control" type="file" :disabled="isUploading"  @@change="onDocumentChosen($event.target);">
+                            <div id="documentFileHelp" class="form-text">You may upload a file up to 25MB.</div>
+                        </div>                    
+                    </div>
+
+                    <div class="modal-footer">
+                        <div :class="{'progress':true, 'w-50':true, 'me-auto':true, 'd-none':!isUploading}">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+
+                        <div>
+                            <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal" :disabled="isUploading">Close</button>
+                            <button type="button" class="btn btn-primary" @@click="onUploadClick" :disabled="isUploading">Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+
+    <script type="text/javascript">
+        const apiUrl = 'https://localhost:5001/api';
+        const documents = @Html.Raw(JsonSerializer.Serialize(ViewData["Documents"]));
+
+        const DocumentManager = {
+            data() {
+                return {
+                    isUploading: false,
+                    uploadForm: null,
+
+                    toastErrorMessage: 'There was an error',
+                    toastSuccessMessage: '',
+
+                    documents: documents
+                }
+            },
+
+            computed: {
+                documentCount() {
+                    return (this.documents.length === 1) ? '1 document' : `${this.documents.length} documents`;
+                }
+            },
+
+            methods: {
+                @* Responds to the user choosing a file in the "Add Document" modal *@
+                onDocumentChosen(target) {
+                    @* Ensure that a file has been selected. *@
+                    if ((!target) || (!target.files) || (target.files === 0)) {
+                        return;
+                    }
+
+                    @* Create a form that includes the file to upload. *@
+                    this.uploadForm = new FormData();
+                    this.uploadForm.append('document', target.files[0]);                    
+                },
+
+                @* Responds to the user clicking the "Upload" button in the "Add Document" modal *@
+                onUploadClick(e) {
+                    this.isUploading = true;
+
+                    @* Upload the file to the Document Upload Service. *@
+                    fetch(`${apiUrl}/upload-document`, { method:'POST', body: this.uploadForm })
+                        .then(res => { 
+                            if (res.ok) {
+                                this.showSuccessInToast('The document was successfully uploaded.');
+                                res.json().then(document => this.documents.push(document));
+                            } else {
+                                this.showErrorInToast('There was a problem uploading the document.');
+                            }
+                        })
+                        .catch(() => { 
+                            this.showErrorInToast('There was a problem uploading the document.');
+                        })
+                        .finally(() => {
+                            this.isUploading = false;
+                            document.getElementById('documentFile').value = null;
+
+                            bootstrap.Modal
+                                .getInstance(document.getElementById('documentModal'))
+                                .hide()
+                            ;
+                        })
+                    ;
+                },
+
+                @* Responds to the user's wish to download the document. *@
+                @* NOTE: An underscore is added to prevent confusion with JavaScript's built-in document object. *@
+                onDownloadDocument(_document) {
+                    fetch(`${apiUrl}/download-document?f=${_document.id}.${_document.extension}`)
+                        .then(res => {
+                            if (res.ok) {
+                                res.blob().then(blob => {
+                                    const link = document.createElement('a');
+                                    link.href = window.URL.createObjectURL(blob); 
+                                    link.download = _document.fileName;
+
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                });
+                            } else {
+                                this.showErrorInToast(`There was a problem downloading the '${_document.fileName}' document.`);
+                            }
+                        })
+                        .catch(ex1 => {
+                            console.error(ex1);
+                            this.showErrorInToast(`There was a problem downloading the '${_document.fileName}' document.`);
+                        })
+                    ;
+                },
+
+                @* Responds to the user clicking the "Delete" option for a document. *@
+                @* NOTE: An underscore is added to prevent confusion with JavaScript's built-in document object. *@
+                onDeleteDocumentClick(_document) {
+                    if (confirm(`Do you really want to delete the '${_document.fileName}' document?`)) {
+                        fetch(`${apiUrl}/delete-document?id=${_document.id}`, { method:'DELETE' })
+                            .then(res => {
+                                // Find the item to delete
+                                var indexToRemove = -1;
+                                for (let i=0; this.documents.length>i; i++) {
+                                    if (this.documents[i].id === _document.id) {
+                                        indexToRemove = i;
+                                        break;
+                                    }
+                                }
+
+                                if (indexToRemove !== -1) {
+                                    this.documents.splice(indexToRemove, 1);
+                                }
+                                this.showSuccessInToast(`The '${_document.fileName}' was successfully deleted.`);
+                            })
+                            .catch(ex1 => {
+                                console.error(ex1);
+                                this.showErrorInToast(`There was a problem deleting the '${_document.fileName}' document.`);
+                            })
+                        ;
+                    }
+                },
+
+                @* Displays a success message in the toast popup. *@
+                showSuccessInToast(message) {
+                    this.toastSuccessMessage = message;
+
+                    const toastElement = document.getElementById('successToast');
+                    if (toastElement) {
+                        const toast = new bootstrap.Toast(toastElement);
+                        toast.show();
+                    }
+                },
+
+                @* Displays an error message in the toast popup. *@
+                showErrorInToast(message) {
+                    this.toastErrorMessage = message;
+
+                    const toastElement = document.getElementById('errorToast');
+                    if (toastElement) {
+                        const toast = new bootstrap.Toast(toastElement);
+                        toast.show();
+                    }
+                }
+            }
+        };
+
+        Vue.createApp(DocumentManager).mount('#documentManager');
+    </script>
+</body>
+</html>
