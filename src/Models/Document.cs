@@ -7,6 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace DocumentManager.Models
 {
+    /// <summary>
+    /// A file that has been uploaded into the Document Manager
+    /// </summary>
     public class Document
     {
         #region Properties

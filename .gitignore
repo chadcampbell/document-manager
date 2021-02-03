@@ -354,3 +354,4 @@ MigrationBackup/
 
 # Ignore the files that have been uploaded
 src/wwwroot/documents
+test/api/package-lock.json

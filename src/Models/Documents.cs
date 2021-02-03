@@ -12,6 +12,9 @@ using System.Text.Json.Serialization;
 
 namespace DocumentManager.Models
 {
+    /// <summary>
+    /// The index of <c>Documents</c> in the Document Manager.
+    /// </summary>
     public class Documents
     {
         #region Properties
@@ -39,6 +42,9 @@ namespace DocumentManager.Models
         public Documents()
         {}
 
+        /// <summary>
+        /// Constructs an index of <c>Documents</c>.
+        /// </summary>
         public Documents(string directory)
         {
             this.List = new List<Document>();
@@ -50,10 +56,15 @@ namespace DocumentManager.Models
         #region Methods
 
         /// <summary>
-        /// Retrieves the <c>Document</c> entities in a specific directory.
+        /// Retrieves the <c>Document</c> entities from a specific directory.
         /// </summary>
         public static Documents GetIndex(string directory)
         {
+            // Ensure the document index location has been provided
+            if (String.IsNullOrWhiteSpace(directory))
+                throw new ArgumentException("The directory where the index is located is expected. However, a directory was not provided.");
+
+            // Load the document index if it exists. It's expected that the document index may not have been created yet.
             var documents = new Documents(directory);
             if (Directory.Exists(directory))
             {
@@ -69,10 +80,24 @@ namespace DocumentManager.Models
         }
 
         /// <summary>
-        /// Adds a <c>Document</c> to the collection of <c>Documents</c>.
+        /// Adds a <c>Document</c> to the index (i.e. collection of <c>Documents</c>).
         /// </summary>
         public Document AddDocument(string documentId, string fileName, Stream sourceFileStream)
         {
+            // Ensure the expected properties have been provided
+            if (String.IsNullOrWhiteSpace(documentId))
+                throw new ArgumentException("A unique identifier for the document to be added to the index was expected. However, an identifer was not provided.");
+            if (String.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentException("A user-friendly name for the document to be added to the index was expected. However, a user-friendly file name was not provided.");
+            if (sourceFileStream == null)
+                throw new ArgumentException("A stream for the document to be added to the index was expected. However, a stream was not provided.");
+
+            // Ensure the directory for the documents exists.
+            if (Directory.Exists(this.directory) == false)
+            {
+                Directory.CreateDirectory(this.directory);
+            }
+
             // Generate a filename for the uploaded file.
             var fileExtension = Path.GetExtension(fileName);
             var filePath = Path.Combine(this.directory, documentId);
@@ -105,23 +130,44 @@ namespace DocumentManager.Models
         /// <summary>
         /// Removes a <c>Document</c> from the collection of <c>Documents</c>.
         /// </summary>
-        public bool RemoveDocument(string documentId)
+        public bool RemoveDocument(Document document)
         {
-            // Find the document in the index
-            var documentToRemove = this.List.Find(x => x.Id == documentId);
-            if (documentToRemove == null)
-                return false;
+            // Ensure the document to be removed has been provided.
+            if (document == null)
+                throw new ArgumentException("A document to be removed from the index was expected. However, a document was not provided.");
 
             // Remove the file from the file system
-            var fileNameToRemove = $"{documentToRemove.Id}.{documentToRemove.FileExtension}";
+            var fileNameToRemove = $"{document.Id}.{document.FileExtension}";
             var fileToRemove = Path.Combine(this.directory, fileNameToRemove);
             File.Delete(fileToRemove);
         
             // Remove the document from the index.
-            this.List.Remove(documentToRemove);
+            this.List.Remove(document);
             this.Persist();
 
             return true;
+        }
+
+        /// <summary>
+        /// Searches for a document with the given id.
+        /// </summary>
+        /// <returns>
+        /// The <c>Document</c> with the provided id. If a <c>Document</c> with the provided id does not exist, <c>null</c> will be returned.
+        /// </returns>
+        public Document FindDocumentById(string documentId)
+        {
+            return this.List.Find(x => x.Id == documentId);
+        }
+
+        /// <summary>
+        /// Searches for a document with the given filename.
+        /// </summary>
+        /// <returns>
+        /// The <c>Document</c> with the given filename. If a <c>Document</c> with the given filename does not exist, <c>null</c> will be returned.
+        /// </returns>
+        public Document FindDocumentByFileName(string fileName)
+        {
+            return this.List.Find(x => x.FileName == fileName);
         }
 
         /**
@@ -129,6 +175,7 @@ namespace DocumentManager.Models
          **/
         private void Persist()
         {
+            // Ensure that only one document can be written to the index at a time.
             lock (indexLock)
             {
                 var json = JsonSerializer.Serialize(this);

@@ -20,6 +20,8 @@ namespace DocumentManager.Controllers
     [ApiController]
     public class ApiController : Controller
     {
+        #region Fields
+
         // The logger used to report application usage.
         private readonly ILogger<ApiController> _logger;
 
@@ -28,6 +30,10 @@ namespace DocumentManager.Controllers
 
         // A proxy to map file extensions with mime types
         private FileExtensionContentTypeProvider mimeTypeProvider = new FileExtensionContentTypeProvider();
+
+        #endregion Fields
+
+        #region Constructors
 
         /// <summary>
         /// The default constructors
@@ -38,6 +44,10 @@ namespace DocumentManager.Controllers
             _logger = logger;
         }
 
+        #endregion Constructors
+
+        #region Actions
+
         /// <summary>
         /// The action associated with downloading the document.
         /// </summary>
@@ -47,6 +57,10 @@ namespace DocumentManager.Controllers
             var stopwatch = Stopwatch.StartNew();
             try
             {
+                // Ensure that a document was included
+                if (String.IsNullOrWhiteSpace(f))
+                    return BadRequest();
+
                 _logger.LogInformation($"Document download requested. (fileName: '{f}')");
 
                 // Ensure the file exists
@@ -85,23 +99,26 @@ namespace DocumentManager.Controllers
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                // Ensure that a document was uploaded.
-                var documentId = Guid.NewGuid().ToString().ToLower();
-                if ((document == null) || (document.Length == 0))
-                    return BadRequest(); 
-                _logger.LogInformation($"Document received for uploading. (ContentType: '{document.ContentType}', FileName: '{document.FileName}', Length: {document.Length}, Name: '{document.Name}')");
-
-                // Ensure the "wwwroot/documents" directory exists. This is where documents are stored.
-                if (Directory.Exists(_documentsDirectory) == false)
-                {
-                    Directory.CreateDirectory(_documentsDirectory);
-                }
+                // Prepare to upload the document. Start with some basic validation.
                 Document result = null;
+                if ((document == null) || (document.Length == 0))
+                {
+                    _logger.LogInformation($"Document upload attempted.");      // This log message is included to complete the narrative.
+                    stopwatch.Stop();
 
-                // Load the index of documents and add another.
+                    _logger.LogInformation($"A document was not sent. For that reason, the document cannot be uploaded.");
+                    return BadRequest(); 
+                }
+                else
+                {
+                    _logger.LogInformation($"Document upload attempted. (ContentType: '{document.ContentType}', FileName: '{document.FileName}', Length: {document.Length}, Name: '{document.Name}')");
+                }
+
+                // Load the index of documents and upload the document.
                 var index = Documents.GetIndex(_documentsDirectory);
                 using (var documentStream = document.OpenReadStream())
                 {
+                    var documentId = Guid.NewGuid().ToString().ToLower();
                     result = index.AddDocument(documentId, document.FileName, documentStream);
                 }
 
@@ -129,25 +146,47 @@ namespace DocumentManager.Controllers
             var stopwatch = Stopwatch.StartNew();
             try
             {
+                // Ensure that a document id was included
+                if (String.IsNullOrWhiteSpace(id))
+                    return BadRequest();
+
+                // Load the index of documents
                 _logger.LogInformation($"Document removal requested. (id: '{id}')");
-
-                // Load the index of documents and add another.
                 var index = Documents.GetIndex(_documentsDirectory);
-                var removed = index.RemoveDocument(id);
 
-                stopwatch.Stop();
-                var message = (removed) 
-                    ? "The document was successfully removed."
-                    : "The document was not removed.";
-                _logger.LogInformation($"{message} (duration: {stopwatch.ElapsedMilliseconds} ms.)");
+                // Find the document with the specific ID and attempt to delete it
+                var document = index.FindDocumentById(id);
+                if (document == null)
+                {
+                    stopwatch.Stop();
+                    _logger.LogInformation($"The document to remove was not found. (duration: {stopwatch.ElapsedMilliseconds} ms.)");
+                    return NotFound();
+                }
+                else
+                {
+                    var removed = index.RemoveDocument(document);
+                    stopwatch.Stop();
 
-                return Ok();
+                    if (removed)
+                    {
+                        _logger.LogInformation($"The document was successfully removed. (duration: {stopwatch.ElapsedMilliseconds} ms.)");
+                        return Ok();
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"The document was not removed. (duration: {stopwatch.ElapsedMilliseconds} ms.)");
+                        return NotFound();
+                    }
+                }
             }
             catch (Exception ex1)
             {
+                stopwatch.Stop();
                 _logger.LogError(ex1, $"There was a problem removing the document. {ex1.Message} (duration:{stopwatch.ElapsedMilliseconds} ms.)");
                 return Problem();
             }
         }
+
+        #endregion Actions
     }
 }

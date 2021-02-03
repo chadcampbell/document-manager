@@ -1,0 +1,534 @@
+{
+	"info": {
+		"_postman_id": "eeb59ae8-7011-4ca4-b743-7affa628ac04",
+		"name": "Document Manager",
+		"description": "This collection of requests are for development and testing of the Document Manager API.\nThese requests assume the app is running at `https://localhost:5001`.\nIt's assumed, based on the structure of the Document Manager project, that the API is located at `https://localhost:5001/api`.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "01 - Upload Document",
+					"item": [
+						{
+							"name": "01 - Valid Document Upload",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2edcb504-7b8c-46ee-ac0d-8abddf3d2255",
+										"exec": [
+											"/**",
+											" * Ensure a file can be uploaded.",
+											" */",
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"/**",
+											" * Ensure the document details returned from the server include the expected extension ('md')",
+											" */",
+											"pm.test('Document extension', function() {",
+											"    const document = pm.response.json();",
+											"    pm.expect(document.extension).to.equal('md');",
+											"});",
+											"",
+											"/**",
+											" * Ensure the document details returned from the server include expected file name ('README.md')",
+											" */",
+											"pm.test('Document file name', function() {",
+											"    const document = pm.response.json();",
+											"    pm.expect(document.fileName).to.equal('README.md');",
+											"});",
+											"",
+											"/**",
+											" * Ensure the document details returned from the server include an ID.",
+											" */",
+											"pm.test('Document ID', function() {",
+											"    const document = pm.response.json();",
+											"    pm.expect(document.id).to.have.lengthOf(36);            // Ensure the length of a GUID is returned. A more robust way would use a Regular Expression",
+											"",
+											"    // Set the ID as a collection variable. This is necessary for the other tests to run in the collection.",
+											"    pm.collectionVariables.set('document_id', document.id);",
+											"});",
+											"",
+											"/**",
+											" * Ensure the document details returned from the server include the date the document was uploaded.",
+											" */",
+											"pm.test('Document Upload Date', function() {",
+											"    const document = pm.response.json();",
+											"    pm.expect(document).to.have.property('uploadDate');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "document",
+											"type": "file",
+											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/upload-document",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"upload-document"
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						},
+						{
+							"name": "02 - Upload Too Large Document",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2b6ed3b9-23af-4406-9968-4e500d1afb4d",
+										"exec": [
+											"/**",
+											" * Ensure the request fails due to a client-side error.",
+											" */",
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"/**",
+											" * Ensure the reason the request failed was because the request was too large.",
+											" */",
+											"pm.test('Error returns', function() {",
+											"    const json = pm.response.json();",
+											"    const text = JSON.stringify(json);",
+											"    pm.expect(text).to.include('Failed to read the request form. Request body too large.');    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "document",
+											"type": "file",
+											"src": "/Users/chadcampbell/Documents/document-manager/test/api/large-file.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/upload-document",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"upload-document"
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						},
+						{
+							"name": "03 - Invalid Method Attempt",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6900746c-0403-4c97-a84b-8bffbb89d458",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(405);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "document",
+											"type": "file",
+											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/upload-document",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"upload-document"
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						}
+					],
+					"description": "The requests in this folder test the `upload-document` API endpoint.",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "02 - Download Document",
+					"item": [
+						{
+							"name": "01 - Valid Document Download",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e60e2fb7-e74c-43b9-9ca1-77542358bcc5",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"/**",
+											" * This performs a spot check of the content returned.",
+											" * By default, this test relies on the README.md file in the project to be uploaded.",
+											" * This file may be changed, so the size or content can't be tested.",
+											" * However, the content type and the word \"Document Manager\" can be evaluated",
+											" */",
+											"pm.test('Quick content test', function() {",
+											"    // Ensure the returned document is a markdown file",
+											"    const contentType = pm.response.headers.get('Content-Type');",
+											"    pm.expect(contentType).to.equal('text/markdown');",
+											"",
+											"    // Spot check the content of the document.",
+											"    const document = pm.response.text();",
+											"    pm.expect(document).to.include.string('Document Manager');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "2200ebd5-619d-436a-8b42-464eb0964aeb",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/api/download-document?f={{document_id}}.md",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"download-document"
+									],
+									"query": [
+										{
+											"key": "f",
+											"value": "{{document_id}}.md"
+										}
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint.\n\nNOTE: This test requires you to manually set the ID from the `01 - Upload Document` tests."
+							},
+							"response": []
+						},
+						{
+							"name": "02 - Invalid Method Attempt",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "289725f7-3990-4691-b4b0-eb742f6e9a82",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(405);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "document",
+											"type": "file",
+											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/download-document?f={{document_id}}.md",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"download-document"
+									],
+									"query": [
+										{
+											"key": "f",
+											"value": "{{document_id}}.md"
+										}
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						}
+					],
+					"description": "The requests in this folder test the `download-document` API endpoint.",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "03 - Delete Document",
+					"item": [
+						{
+							"name": "01 - Invalid Method Attempt",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ec4ce3f0-58d6-4d78-86d4-77459d28b7c5",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(405);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "document",
+											"type": "file",
+											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/delete-document?id=91d6dbd6-c244-4d21-9a52-7aa4e7e53c4a",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"delete-document"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "91d6dbd6-c244-4d21-9a52-7aa4e7e53c4a"
+										}
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						},
+						{
+							"name": "02 - Delete File That Does Not Exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bbebe7e3-0abd-44c1-9333-4c3a46e907e7",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "document",
+											"type": "file",
+											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/delete-document?id=12e3bdb7-d132-7b32-cac3-7ac5e7e53c4a",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"delete-document"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "12e3bdb7-d132-7b32-cac3-7ac5e7e53c4a"
+										}
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						},
+						{
+							"name": "02 - Valid Document Deletion",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8b8cb3a8-4b9a-4058-8437-dc43e4cc887f",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a24ffcb1-8229-4e9c-bbe0-9b2055d24037",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/api/delete-document?id={{document_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"delete-document"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "{{document_id}}"
+										}
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						}
+					],
+					"description": "The requests in this folder test the `delete-document` API endpoint.",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"description": "This directory is assumed to hold requests related to Documents in the Document Manager API.",
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "edc680d5-b657-48cd-a12f-52888281c3c4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "c3e7511e-1528-4386-a7a7-013f6d6d5c75",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "1e9167a5-1252-4cd8-865a-f7891fa0fb6d",
+			"key": "base_url",
+			"value": "https://localhost:5001"
+		},
+		{
+			"id": "9a62a723-9605-4e49-b5b6-5592254a1d53",
+			"key": "document_id",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}

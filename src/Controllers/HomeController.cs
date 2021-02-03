@@ -16,15 +16,25 @@ namespace DocumentManager.Controllers
 {
     public class HomeController : Controller
     {
+        #region Fields
+
         private IWebHostEnvironment _hostEnvironment;
 
         private readonly ILogger<HomeController> _logger;
+
+        #endregion Fields
+
+        #region Constructors
 
         public HomeController(IWebHostEnvironment hostEnvironment, ILogger<HomeController> logger)
         {
             _hostEnvironment = hostEnvironment;
             _logger = logger;
         }
+
+        #endregion Constructors
+
+        #region Actions
 
         public IActionResult Index()
         {
@@ -47,5 +57,7 @@ namespace DocumentManager.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        #endregion Actions
     }
 }
