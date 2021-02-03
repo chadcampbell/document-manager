@@ -22,6 +22,17 @@ In addition, Webdriver I/O supports Safari, which not all tools do.
 ### API
 The API was tested using automated tests via Postman.
 The collection of tests can be found [here](./api/PostmanCollection.json).
+This collection of tests can be ran using Postman's built-in collection test runner.
+To run these tests, some configuration is needed.
+
+1. Find your Postman Working Directory
+    - Open Postman
+    - Open Settings
+    - Review the Working Directory Location
+2. Add the [README.md](../README.md) to your Postman Working Directory.
+3. Add the [large-file.txt](./api/large-file.txt) to your Postman Working Directory.
+
+
 Postman has a built-in collection test runner.
 This test runner can be run via 1) The Postman UI or 2) Command Line interface via Newman. 
 The latter allows for integration with CI/CD pipelines.

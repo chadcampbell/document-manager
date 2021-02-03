@@ -75,7 +75,7 @@
 										{
 											"key": "document",
 											"type": "file",
-											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
+											"src": "README.md"
 										}
 									]
 								},
@@ -131,7 +131,7 @@
 										{
 											"key": "document",
 											"type": "file",
-											"src": "/Users/chadcampbell/Documents/document-manager/test/api/large-file.txt"
+											"src": "large-file.txt"
 										}
 									]
 								},
@@ -177,7 +177,53 @@
 										{
 											"key": "document",
 											"type": "file",
-											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
+											"src": "README.md"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/upload-document",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"upload-document"
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						},
+						{
+							"name": "04 - Send Missing Document",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c3753c3e-6922-46d1-93f0-7f91fafee600",
+										"exec": [
+											"/**",
+											" * Ensure a file can be uploaded.",
+											" */",
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "document",
+											"type": "file",
+											"src": []
 										}
 									]
 								},
@@ -296,13 +342,7 @@
 								"header": [],
 								"body": {
 									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "document",
-											"type": "file",
-											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
-										}
-									]
+									"formdata": []
 								},
 								"url": {
 									"raw": "{{base_url}}/api/download-document?f={{document_id}}.md",
@@ -321,6 +361,112 @@
 									]
 								},
 								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						},
+						{
+							"name": "03 - Send Missing Filename",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2a4c5409-4cb3-4a01-8cbd-3ca2e72a2515",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3c98f1e3-e783-4475-97ed-ef99079f949f",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/api/download-document",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"download-document"
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint.\n\nNOTE: This test requires you to manually set the ID from the `01 - Upload Document` tests."
+							},
+							"response": []
+						},
+						{
+							"name": "04 - Request File That Does Not Exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "3691982d-fe0b-47fa-9049-b8723ae5ea9e",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "04b8380c-e129-4044-b657-7234b5a5a6fd",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/api/download-document?f=12e3bdb7-d132-7b32-cac3-7ac5e7e53c4a.md",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"download-document"
+									],
+									"query": [
+										{
+											"key": "f",
+											"value": "12e3bdb7-d132-7b32-cac3-7ac5e7e53c4a.md"
+										}
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint.\n\nNOTE: This test requires you to manually set the ID from the `01 - Upload Document` tests."
 							},
 							"response": []
 						}
@@ -356,13 +502,7 @@
 								"header": [],
 								"body": {
 									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "document",
-											"type": "file",
-											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
-										}
-									]
+									"formdata": []
 								},
 								"url": {
 									"raw": "{{base_url}}/api/delete-document?id=91d6dbd6-c244-4d21-9a52-7aa4e7e53c4a",
@@ -405,13 +545,7 @@
 								"header": [],
 								"body": {
 									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "document",
-											"type": "file",
-											"src": "/Users/chadcampbell/Documents/document-manager/README.md"
-										}
-									]
+									"formdata": []
 								},
 								"url": {
 									"raw": "{{base_url}}/api/delete-document?id=12e3bdb7-d132-7b32-cac3-7ac5e7e53c4a",
@@ -434,7 +568,44 @@
 							"response": []
 						},
 						{
-							"name": "02 - Valid Document Deletion",
+							"name": "03 - Send Missing Document ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dfbeaca6-5c67-4bba-9f91-a53104e6dfb2",
+										"exec": [
+											"pm.test('Status test', function() {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/api/delete-document",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"delete-document"
+									]
+								},
+								"description": "This request uploads a valid document. The purpose of this request is to test the desired behavior of the `upload-document` endpoint."
+							},
+							"response": []
+						},
+						{
+							"name": "04 - Valid Document Deletion",
 							"event": [
 								{
 									"listen": "test",
@@ -467,7 +638,7 @@
 									"formdata": []
 								},
 								"url": {
-									"raw": "{{base_url}}/api/delete-document?id={{document_id}}",
+									"raw": "{{base_url}}/api/delete-document?id={{document_id}}&=",
 									"host": [
 										"{{base_url}}"
 									],
@@ -479,6 +650,10 @@
 										{
 											"key": "id",
 											"value": "{{document_id}}"
+										},
+										{
+											"key": null,
+											"value": ""
 										}
 									]
 								},
@@ -520,13 +695,18 @@
 	],
 	"variable": [
 		{
-			"id": "1e9167a5-1252-4cd8-865a-f7891fa0fb6d",
+			"id": "2cc1ef60-befc-4604-88ba-13f5933a8d4e",
 			"key": "base_url",
 			"value": "https://localhost:5001"
 		},
 		{
-			"id": "9a62a723-9605-4e49-b5b6-5592254a1d53",
+			"id": "e58e7bce-fddb-4b4c-9b3d-c8a3ffc9d857",
 			"key": "document_id",
+			"value": ""
+		},
+		{
+			"id": "fc6ae49c-b8fb-4cbd-bebb-8da86ec67101",
+			"key": "working_directory",
 			"value": ""
 		}
 	],
