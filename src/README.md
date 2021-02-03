@@ -169,6 +169,13 @@ These technical enhancements cover areas including:
 In the UI, there are several technical improvements that could be made.
 Those improvements are detailed below.
 
+#### Add UI Virtualization
+The current implementation shows all documents on the disk.
+If this list grows, it may negatively impact the performance of the UI.
+For that reason, infinite scrolling or paging of documents should be considered.
+
+UI virtualization is a technique that only renders content that is visible to a user.
+
 #### Refactor Toast Elements in a Vue Component
 Vue Components are designed to let you encapsulate reusable code.
 They're a way to create building blocks in an app.
@@ -277,6 +284,12 @@ At this time, this implementation runs "wide-open".
 There are few security checks in place.
 However, adding authentication and authorization could help restrict undesired uploads. 
 In addition, this information could be added to a possible file history implementation to identify who changed a document and when.
+
+#### Integrate Anti-Forgery Tokens
+At this time, the API does little in terms of security.
+However, this API would benefit from supporting Anti-Forgery tokens.
+This would help prevent cross-site attacks.
+This may or may not be part of adding support for authentication / authorization based on the needs of the app.
 
 #### Implement Virus Scanning on Documents
 To improve security, it's recommended to scan documents when they are uploaded.

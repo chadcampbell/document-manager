@@ -8,7 +8,7 @@ This document manager allows a user to:
 
 To get started with this project, you must have the prerequisites installed.
 Once the prerequisites have been installed, you can run the project.
-Each of these steps are covered in the sections listed below.
+These steps, and related information, are covered in the sections listed below.
 
 - [Prerequisites](#prerequisites)
 - [Running the Project](#running-the-project)
@@ -20,34 +20,44 @@ This project uses .NET 5.
 You can download .NET 5 from [here](https://dotnet.microsoft.com/download/dotnet/5.0).
 
 ### Running the Project
-To run the project, please do the following:
+To run the project, please complete the following steps:
 
-**Clone this repository**
+- Open a Terminal window
 
-`git clone https://github.com/chadcampbell/document-manager.git`
+    You can use the Terminal window of your choice.
 
-**Open a Terminal window**
-You can use the Terminal window of your choise.
+- Clone this repository
 
-**Navigate to the `src` directory**
+    To clone this repository, run the following command from your Terminal.
 
-**Restore the project dependencies**
+    `git clone https://github.com/chadcampbell/document-manager.git`
 
-`dotnet restore`
+- Navigate to the `src` directory
 
-**Run the project**
+    Navigate to the `src` directory in your Terminal.
+    You can view the contents [here](./src/) as an example.
 
-`dotnet run`
+- Restore the project dependencies
 
-If you intend to edit the code, you may want to run the code using `dotnet watch run` instead.
+    `dotnet restore`
 
-**Navigate to `https://localhost:5001/`**
-In your web browser, enter `https://localhost:5001/` into the address bar.
-Please note, this implementation has only been tested in Google Chrome.
+- Run the project
+
+    `dotnet run`
+
+    If you intend to edit the code, you may want to run the code using `dotnet watch run` instead.
+
+- Navigate to `https://localhost:5001/`
+
+    In your web browser, enter `https://localhost:5001/` into the address bar.
+    Please note, this implementation has only been tested in Google Chrome.
+
+Once you have completed these steps you should see the document manager running in your web browser. The next section includes implementation details about this document manager.
 
 ### Implementation Details
-Additional information about the implementation can be found in the appropriate directory.
-This implementation includes two directories with additional details:
+The implementation of the document manager includes details about the source code and tests.
+This information is spread across multiple directories in this repository.
+These details can be found in the README files in the following directories:
 
 - [src](./src/README.md) - This README includes implementation details about the source code itself.
 - [test](./test/README.md) - This README includes details about the automated tests in the project.
@@ -56,23 +66,24 @@ While the current implementation is functional, there are future enhancements th
 
 ### Future Functional Enhancements
 There are enhancements that can be made from a user experience perspective.
-These enhancements include, but are not limited to:
+These enhancements include, but are not limited to, the following:
 
-#### Add the ability to search documents. 
-A basic search implementation could rely solely on the file name. 
-A more advanced search implementation could index file content. 
+#### Add the ability to search documents 
+The ability to search documents would improve the user experience.
+A basic search implementation could be added using just the file name. 
+A more advanced search implementation could index content of the documents. 
 Scoring could also be used to promote more recently uploaded documents.
 
-
-#### Add the ability to filter documents. 
-A basic document filter would allow users to filter based on metadata such as:
+#### Add the ability to filter documents
+The ability to filter documents would help users find what they're looking for faster. 
+Filters could be added to allow users to refine their view based on metadata such as:
     
     - File Types
     - File Sizes
     - Upload Date
 
-    A more advanced implementation could group metadata into more friendly options. 
-    For example:
+A more advanced filter implementation could group metadata into more friendly options. 
+For example:
     
     - File Type categories that could be created:
         - .jpg, .gif, .bmp, .png, etc. files could be categorized as "Pictures"
@@ -92,32 +103,46 @@ A basic document filter would allow users to filter based on metadata such as:
         - Older
         - Custom
 
-#### Add the ability to view documents in different ways. 
-For example, add the option to toggle between different views such as: 
+#### Add the ability to view documents in different ways
+Users may want to view documents differently based on the type of documents their managing.
+For this reason, it could be helpful to add different view options such as:
 
 - An icon view
 - A list view 
 - A table view 
 - A card view.
 
-#### Add the ability to group documents. 
-Documents could be grouped by:
+#### Add the ability to group documents
+Grouping documents can provided an easier managemnt experience.
+For this reason, it could be helpful to enable a user to choose if they want to group the documents by:
+
     - Type
     - First letter of the file name
     - Upload Date
     - File Size
 
-#### Add the ability to edit file details. 
-For example, let a user:
-    - Change the file name
+#### Add the ability to edit file details
+The current implementation limits the user to adding and deleting documents.
+However, once a document is added, a user may want to change information about it.
+For example, it may be useful to let a user edit file details such as:
+
+    - Change the filename
     - Add tags for categorization purposes
-    - Commenting.
+    - Add comments to a document
     - Revisit previous versions
 
-#### Add an ability to preview the file.
+#### Add an ability to preview the file
+Sometimes, files have ambiguous names.
+The ability to preview the contents of a file would enable a user to get a quick reminder of what the file is. 
 
-#### Allow a user to drag a file into the file manager and automatically start the file upload process.
+#### Allow a user to drag a file into the file manager
+Drag-and-drop abilities are a common feature of desktop apps.
+The drag-and-drop API in JavaScript opens the doors to the ability to deliver this in this document manager.
+If a document is dragged onto the surface, the file upload could automatically start.
 
-#### Consider restricting uploads to specific types if it makes sense.
+#### Consider restricting uploads to specific types if it makes sense
+The current implementation lets users upload virtually any kind of file.
+However, it may be desired to restrict this to known / supported file types.
+The importance of this increases if document content searching and file previews were added.
 
 Thank you for reading. 😀
