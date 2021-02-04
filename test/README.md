@@ -32,7 +32,6 @@ To run these tests, some configuration is needed.
 2. Add the [README.md](../README.md) to your Postman Working Directory.
 3. Add the [large-file.txt](./api/large-file.txt) to your Postman Working Directory.
 
-
 Postman has a built-in collection test runner.
 This test runner can be run via 1) The Postman UI or 2) Command Line interface via Newman. 
 The latter allows for integration with CI/CD pipelines.

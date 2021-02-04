@@ -78,30 +78,30 @@ Scoring could also be used to promote more recently uploaded documents.
 The ability to filter documents would help users find what they're looking for faster. 
 Filters could be added to allow users to refine their view based on metadata such as:
     
-    - File Types
-    - File Sizes
-    - Upload Date
+- File Types
+- File Sizes
+- Upload Date
 
 A more advanced filter implementation could group metadata into more friendly options. 
 For example:
     
-    - File Type categories that could be created:
-        - .jpg, .gif, .bmp, .png, etc. files could be categorized as "Pictures"
-        - .mov, .mp4, etc files could be categorized as "Videos"
-        - .docx, .xlsx, .pdf, etc files could be categorized as "Documents"
-        - .mp3, .wav, etc could be categorized as "Audio Files"
-    - File Size categories that could be created:
-        - Small (< 1 MB)
-        - Average (< 25 MB)
-        - Large (< 1 GB)
-        - Gigantic (>1 GB)
-    - Upload Date categoried that could be created:
-        - This Week
-        - This Month
-        - Last Month
-        - This Year
-        - Older
-        - Custom
+- File Type categories that could be created:
+    - .jpg, .gif, .bmp, .png, etc. files could be categorized as "Pictures"
+    - .mov, .mp4, etc files could be categorized as "Videos"
+    - .docx, .xlsx, .pdf, etc files could be categorized as "Documents"
+    - .mp3, .wav, etc could be categorized as "Audio Files"
+- File Size categories that could be created:
+    - Small (< 1 MB)
+    - Average (< 25 MB)
+    - Large (< 1 GB)
+    - Gigantic (>1 GB)
+- Upload Date categoried that could be created:
+    - This Week
+    - This Month
+    - Last Month
+    - This Year
+    - Older
+    - Custom
 
 #### Add the ability to view documents in different ways
 Users may want to view documents differently based on the type of documents their managing.
@@ -116,20 +116,20 @@ For this reason, it could be helpful to add different view options such as:
 Grouping documents can provided an easier managemnt experience.
 For this reason, it could be helpful to enable a user to choose if they want to group the documents by:
 
-    - Type
-    - First letter of the file name
-    - Upload Date
-    - File Size
+- Type
+- First letter of the file name
+- Upload Date
+- File Size
 
 #### Add the ability to edit file details
 The current implementation limits the user to adding and deleting documents.
 However, once a document is added, a user may want to change information about it.
 For example, it may be useful to let a user edit file details such as:
 
-    - Change the filename
-    - Add tags for categorization purposes
-    - Add comments to a document
-    - Revisit previous versions
+- Change the filename
+- Add tags for categorization purposes
+- Add comments to a document
+- Revisit previous versions
 
 #### Add an ability to preview the file
 Sometimes, files have ambiguous names.

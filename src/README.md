@@ -17,9 +17,9 @@ These details are covered in the following sections:
 While creating this implementation of a document manager, several decisions were made.
 This section details the decisions made at the following levels:
 
-    - [UI](#ui)
-    - [API](#api)
-    - [Data](#data)
+- [UI](#ui)
+- [API](#api)
+- [Data](#data)
 
 ### UI
 The UI of this document manager is a Progressive Single Page Application (SPA) written with ASP.NET and Vue.js 3.0.
@@ -326,9 +326,9 @@ The current implementation serves resources as they are written.
 However, CSS, HTML, and JavaScript files should be minified to reduce resource file sizes. 
 This can 
 
-    1. Get the initial app to the user faster 
-    2. Improve load times
+1. Get the initial app to the user faster 
+2. Improve load times
 
-    Minification can be implemented via an automation or bundling tool like Gulp, Webpack, or Snowpack.
+Minification can be implemented via an automation or bundling tool like Gulp, Webpack, or Snowpack.
 
 Thank you for reading. 😀
